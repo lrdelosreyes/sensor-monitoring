@@ -1,16 +1,16 @@
 import React from 'react'
-import AppBar from '@mui/material/AppBar'
-import Box from '@mui/material/Box'
-import Toolbar from '@mui/material/Toolbar'
-import Button from '@mui/material/Button'
+import { Box, Stack, Toolbar, Button, AppBar, Avatar } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
+import { deepOrange } from '@mui/material/colors'
 
 interface Props {
-  toggleDrawer: (toggle: boolean) => void
+  toggleDrawer: (toggle: boolean) => void,
+  handleLogin: () => void
+  loggedIn: boolean
 }
 
-const Navbar = ({ toggleDrawer }: Props) => {
+const Navbar = ({ toggleDrawer, handleLogin, loggedIn }: Props) => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -25,7 +25,7 @@ const Navbar = ({ toggleDrawer }: Props) => {
           >
             <MenuIcon />
           </IconButton>
-          <Box sx={{ flexGrow: 1 }}>
+          <Box>
             <Button 
               color="inherit" href='/'
               sx={{ 
@@ -33,7 +33,25 @@ const Navbar = ({ toggleDrawer }: Props) => {
               }}
             >Sensor Monitoring</Button>
           </Box>
-          <Button color="inherit" href='/dashboard'>Dashboard</Button>
+          <Box sx={{ flexGrow: 1 }}></Box>
+          <Button 
+            color="inherit" 
+            href={loggedIn ? '/dashboard' : '#'}
+            onClick={handleLogin}
+          >
+            {loggedIn ? (
+              <Stack>
+                <Avatar 
+                  sx={{ 
+                    bgcolor: deepOrange[700], 
+                    width: 36, 
+                    height: 36,
+                    fontSize: '1rem'
+                  }}
+                >JD</Avatar>
+              </Stack>
+            ) : 'Login'}
+          </Button>
         </Toolbar>
       </AppBar>
     </Box>

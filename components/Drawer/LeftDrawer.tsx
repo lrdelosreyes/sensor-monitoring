@@ -13,6 +13,7 @@ import WaterDropIcon from '@mui/icons-material/WaterDrop'
 import WaterIcon from '@mui/icons-material/Water'
 import { SvgIconComponent } from '@mui/icons-material'
 import Image from 'next/image'
+import { deepOrange } from '@mui/material/colors'
 
 type SortBy = 'all' | 'rain' | 'waterlevel'
 
@@ -20,6 +21,7 @@ interface Props {
   toggleDrawer: (toggle: boolean) => void
   toggleSort: (sort: SortBy) => void
   isOpenDrawer: boolean
+  sortBy: SortBy
 }
 
 const drawerMenus: {text: string, value: SortBy, icon: SvgIconComponent}[] = [
@@ -62,7 +64,8 @@ const drawerLegends = [
 const LeftDrawer = ({ 
   toggleDrawer,
   toggleSort, 
-  isOpenDrawer
+  isOpenDrawer,
+  sortBy
 }: Props) => {
   const list = () => {
     return (
@@ -72,27 +75,38 @@ const LeftDrawer = ({
         onClick={() => toggleDrawer(false)}
         onKeyDown={() => toggleDrawer(false)}
       >
+        <Divider variant='middle' sx={{ mt: 2}} />
         <Box p={2} textAlign='center'>
-          <Typography>Sort By</Typography>
+          <Typography fontWeight={700}>Display</Typography>
         </Box>
-        <Divider />
+        <Divider variant='middle' />
         <List>
           {drawerMenus.map((menu, index) => (
             <ListItem key={menu.text} disablePadding>
-              <ListItemButton onClick={() => toggleSort(menu.value)}>
+              <ListItemButton 
+                onClick={() => toggleSort(menu.value)}
+                sx={{  
+                  background: sortBy === menu.value ? deepOrange[500] : 'unset',
+                  color: sortBy === menu.value ? 'white' : 'unset',
+                  '&:hover': {
+                    background: deepOrange[300],
+                    color: 'white'
+                  }
+                }}
+              >
                 <ListItemIcon>
-                  {<menu.icon />}
+                  {<menu.icon sx={{ color: sortBy === menu.value ? 'white' : 'unset' }} />}
                 </ListItemIcon>
                 <ListItemText primary={menu.text} />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
-        <Divider />
+        <Divider variant='middle' sx={{ mt: 3 }} />
         <Box p={2} textAlign='center'>
-          <Typography>Legend</Typography>
+          <Typography fontWeight={700}>Legend</Typography>
         </Box>
-        <Divider />
+        <Divider variant='middle' />
         <List>
           {drawerLegends.map((legend, index) => (
             <ListItem key={legend.text} disablePadding>

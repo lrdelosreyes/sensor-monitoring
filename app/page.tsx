@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Map from '@/components/Map'
 import Navbar from '@/components/Navigation/Navbar'
-import LeftDrawer from '@/components/Navigation/LeftDrawer'
+import LeftDrawer from '@/components/Drawer/LeftDrawer'
 import { Box } from '@mui/material'
 
 type SortBy = 'all' | 'rain' | 'waterlevel'
@@ -11,11 +12,23 @@ type SortBy = 'all' | 'rain' | 'waterlevel'
 const SENSOR_API = process.env.NEXT_PUBLIC_SENSOR_API_URL
 
 export default function Home() {
+  const searchParams = useSearchParams()
   const [sensors, setSensors] = useState<any>([])
   const [sortedSensors, setSortedSensors] = useState<any>([])
   const [isLoading, setLoading] = useState(true)
   const [isOpenDrawer, setIsOpenDrawer] = useState(false)
   const [sortBy, setSortBy] = useState<SortBy>('all')
+  const [loggedIn, setLoggedIn] = useState(false)
+
+  useEffect(() => {
+    const logout = searchParams.get('logout') === '1'
+
+    if (!!logout) handleLogout()
+  })
+
+  useEffect(() => {
+    if (localStorage.getItem('logged_in') === '1') setLoggedIn(true)
+  }, [])
 
   useEffect(() => {
     setLoading(true)
@@ -48,14 +61,29 @@ export default function Home() {
     setSortBy(sortValue)
   }
 
+  const handleLogin = () => {
+    localStorage.setItem('logged_in', '1')
+    window.location.href = '/dashboard'
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('logged_in')
+    window.location.href = '/'
+  }
+
   return (
     <Box height="100vh">
       <LeftDrawer 
         toggleSort={toggleSort}
         toggleDrawer={toggleDrawer} 
         isOpenDrawer={isOpenDrawer} 
+        sortBy={sortBy}
       />
-      <Navbar toggleDrawer={toggleDrawer} />
+      <Navbar 
+        toggleDrawer={toggleDrawer} 
+        handleLogin={handleLogin}
+        loggedIn={loggedIn} 
+      />
       <Map 
         sensors={sortedSensors} 
         isLoading={isLoading} 

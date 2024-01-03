@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react'
 import MiniVariantDrawer from '@/components/Drawer/MiniVariantDrawer'
+import { Stack } from '@mui/material'
 
-const Dashboard = () => {
+const Sensors = () => {
   const [loggedIn, setLoggedIn] = useState(false)
 
   useEffect(() => {
@@ -16,9 +17,11 @@ const Dashboard = () => {
 
   return (
     <MiniVariantDrawer loggedIn={loggedIn}>
-      Dashboard
+      <Stack>
+        Sensors
+      </Stack>
     </MiniVariantDrawer>
   )
 }
 
-export default Dashboard
+export default Sensors

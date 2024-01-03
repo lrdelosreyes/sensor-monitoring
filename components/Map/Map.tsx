@@ -15,7 +15,6 @@ interface Props {
 }
 
 const Map = ({ sensors, isLoading }: Props) => {
-  
   if (isLoading) {
     return ( 
       <Stack 
@@ -34,6 +33,7 @@ const Map = ({ sensors, isLoading }: Props) => {
     <MapContainer 
       center={[18.089133286, 121.193151641]} 
       zoom={10}
+      zoomControl={false}
       style={{ height: 'calc(100vh - 4.7em)' }}
     >
       <TileLayer

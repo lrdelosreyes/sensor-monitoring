@@ -5,7 +5,7 @@ import {
   Marker,
   Popup
 } from "react-leaflet"
-import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack } from '@mui/material'
+import { List, ListItem, ListItemText } from '@mui/material'
 
 interface Props {
   sensor: any
