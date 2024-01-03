@@ -2,8 +2,11 @@
 
 import React, { useEffect, useState } from 'react'
 import MiniVariantDrawer from '@/components/Drawer/MiniVariantDrawer'
+import { Divider, Stack, Typography } from '@mui/material'
+import Loader from '@/components/Loader'
 
 const Dashboard = () => {
+  const [isLoading, setIsLoading] = useState(true)
   const [loggedIn, setLoggedIn] = useState(false)
 
   useEffect(() => {
@@ -14,9 +17,18 @@ const Dashboard = () => {
     }
   }, [])
 
+
   return (
     <MiniVariantDrawer loggedIn={loggedIn}>
-      Dashboard
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <Stack p={{ xs: 2, sm: 3 }}>
+          <Typography variant='h5'>Dashboard</Typography>
+          <Divider />
+        </Stack>
+      )}
+      
     </MiniVariantDrawer>
   )
 }

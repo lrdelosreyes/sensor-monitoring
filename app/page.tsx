@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Map from '@/components/Map'
 import Navbar from '@/components/Navigation/Navbar'
 import LeftDrawer from '@/components/Drawer/LeftDrawer'
 import { Box } from '@mui/material'
+import Loader from '@/components/Loader'
 
 type SortBy = 'all' | 'rain' | 'waterlevel'
 
@@ -72,22 +73,24 @@ export default function Home() {
   }
 
   return (
-    <Box height="100vh">
-      <LeftDrawer 
-        toggleSort={toggleSort}
-        toggleDrawer={toggleDrawer} 
-        isOpenDrawer={isOpenDrawer} 
-        sortBy={sortBy}
-      />
-      <Navbar 
-        toggleDrawer={toggleDrawer} 
-        handleLogin={handleLogin}
-        loggedIn={loggedIn} 
-      />
-      <Map 
-        sensors={sortedSensors} 
-        isLoading={isLoading} 
-      />
-    </Box>
+    <Suspense fallback={<Loader />}>
+      <Box height="100vh">
+        <LeftDrawer 
+          toggleSort={toggleSort}
+          toggleDrawer={toggleDrawer} 
+          isOpenDrawer={isOpenDrawer} 
+          sortBy={sortBy}
+        />
+        <Navbar 
+          toggleDrawer={toggleDrawer} 
+          handleLogin={handleLogin}
+          loggedIn={loggedIn} 
+        />
+        <Map 
+          sensors={sortedSensors} 
+          isLoading={isLoading} 
+        />
+      </Box>
+    </Suspense>
   )
 }

@@ -11,10 +11,15 @@ import 'leaflet/dist/leaflet.css'
 
 interface Props {
   sensors: any, 
-  isLoading: boolean
+  isLoading?: boolean,
+  isModal?: boolean | undefined
+  handleChangeCoordinates?: (coordinates: any) => void | undefined
 }
 
-const Map = ({ sensors, isLoading }: Props) => {
+const defaultLat = process.env.NEXT_PUBLIC_DEFAULT_LAT ?? 0
+const defaultLong = process.env.NEXT_PUBLIC_DEFAULT_LONG ?? 0
+
+const Map = ({ sensors, isLoading, isModal, handleChangeCoordinates }: Props) => {
   if (isLoading) {
     return ( 
       <Stack 
@@ -31,17 +36,22 @@ const Map = ({ sensors, isLoading }: Props) => {
   
   return (
     <MapContainer 
-      center={[18.089133286, 121.193151641]} 
+      center={isModal ? [sensors[0]?.lat ?? defaultLat, sensors[0]?.long ?? defaultLong] : [defaultLat, defaultLong]} 
       zoom={10}
       zoomControl={false}
-      style={{ height: 'calc(100vh - 4.7em)' }}
+      style={{ height: isModal ? '20em' : 'calc(100vh - 4.7em)' }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {sensors.map((sensor: any) => 
-        <Pins key={sensor.id} sensor={sensor} />
+      {sensors && sensors?.map((sensor: any, index: any) => 
+        <Pins 
+          key={sensor?.id ?? index} 
+          sensor={sensor} 
+          isModal={isModal} 
+          handleChangeCoordinates={handleChangeCoordinates}
+        />
       )}
     </MapContainer>
   )

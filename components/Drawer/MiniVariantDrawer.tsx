@@ -1,6 +1,8 @@
 'use client'
 
-import * as React from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import MuiDrawer from '@mui/material/Drawer'
@@ -22,7 +24,8 @@ import SensorsIcon from '@mui/icons-material/Sensors'
 import PublicIcon from '@mui/icons-material/Public'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { SvgIconComponent } from '@mui/icons-material'
-//import { deepOrange } from '@mui/material/colors'
+import Link from 'next/link'
+import { deepOrange, grey } from '@mui/material/colors'
 
 interface Props {
   children: React.ReactNode
@@ -126,8 +129,18 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 const MiniVariantDrawer = ({ children, loggedIn }: Props) => {
+  const pathname = usePathname()
   const theme = useTheme()
-  const [open, setOpen] = React.useState(false)
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const [open, setOpen] = useState(true)
+
+  useEffect(() => {
+    if (isMobile) {
+      handleDrawerClose()
+    } else {
+      handleDrawerOpen()
+    }
+  }, [isMobile])
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -155,12 +168,14 @@ const MiniVariantDrawer = ({ children, loggedIn }: Props) => {
           </IconButton>
           <Box sx={{ flexGrow: 1 }} />
           <Box>
-            <Button 
-              color="inherit" href='/dashboard'
-              sx={{ 
-                display: { xs: 'none', sm: 'block' } 
-              }}
-            >Welcome, Juan Dela Cruz!</Button>
+            <Link href='/dashboard'>
+              <Button 
+                color="inherit"
+                sx={{ 
+                  display: { xs: 'none', sm: 'block' } 
+                }}
+              >Welcome, John Doe!</Button>
+            </Link>
           </Box>
         </Toolbar>
       </AppBar>
@@ -174,25 +189,32 @@ const MiniVariantDrawer = ({ children, loggedIn }: Props) => {
         <List>
           {drawerMenus1.map((menu, index) => (
             <ListItem key={menu.text} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                href={menu.href}
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
+              <Link href={menu.href}>
+                <ListItemButton
                   sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
+                    minHeight: 48,
+                    justifyContent: open ? 'initial' : 'center',
+                    px: 2.5,
+                    background: pathname === menu.href ? deepOrange[500] : 'unset',
+                    color: pathname === menu.href ? 'white' : 'unset',
+                    '&:hover': {
+                      background: deepOrange[300],
+                      color: 'white'
+                    }
                   }}
                 >
-                  {<menu.icon />}
-                </ListItemIcon>
-                <ListItemText primary={menu.text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : 'auto',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {<menu.icon sx={{ color: pathname === menu.href ? 'white' : 'unset' }} />}
+                  </ListItemIcon>
+                  <ListItemText primary={menu.text} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </Link>
             </ListItem>
           ))}
         </List>
@@ -206,6 +228,10 @@ const MiniVariantDrawer = ({ children, loggedIn }: Props) => {
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
                   px: 2.5,
+                  '&:hover': {
+                    background: deepOrange[300],
+                    color: 'white'
+                  }
                 }}
               >
                 <ListItemIcon
@@ -224,9 +250,22 @@ const MiniVariantDrawer = ({ children, loggedIn }: Props) => {
         </List>
       </Drawer>
       
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box 
+        component="main" 
+        sx={{ 
+          flexGrow: 1, 
+          background: grey[200],
+          color: grey[800],
+          height: '100vh',
+          overflowY: 'auto'
+        }}
+      >
         <DrawerHeader />
-        <Stack>{children}</Stack>
+        {loggedIn && (
+          <Suspense>
+            <Stack>{children}</Stack>
+          </Suspense>
+        )}
       </Box>
     </Box>
   );
