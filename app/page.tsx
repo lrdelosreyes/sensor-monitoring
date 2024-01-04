@@ -5,12 +5,12 @@ import { useSearchParams } from 'next/navigation'
 import Map from '@/components/Map'
 import Navbar from '@/components/Navigation/Navbar'
 import LeftDrawer from '@/components/Drawer/LeftDrawer'
-import { Box } from '@mui/material'
+import { Alert, Box, Snackbar } from '@mui/material'
 import Loader from '@/components/Loader'
+import API from '@/utilities/API'
 
 type SortBy = 'all' | 'rain' | 'waterlevel'
-
-const SENSOR_API = process.env.NEXT_PUBLIC_SENSOR_API_URL
+type MessageStatus = 'success' | 'error'
 
 export default function Home() {
   const searchParams = useSearchParams()
@@ -20,6 +20,10 @@ export default function Home() {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false)
   const [sortBy, setSortBy] = useState<SortBy>('all')
   const [loggedIn, setLoggedIn] = useState(false)
+  const [feedback, setFeedback] = useState<{
+    status: MessageStatus,
+    message: string
+  } | undefined>()
 
   useEffect(() => {
     const logout = searchParams.get('logout') === '1'
@@ -34,16 +38,21 @@ export default function Home() {
   useEffect(() => {
     setLoading(true)
 
-    const fetchSensors = async () => {
-      const response = await fetch(`${SENSOR_API}/api/v1/sensors`)
-      const data = await response.json()
-
-      setSensors(data.data)
+    const fetchData = async () => {
+      const data = await API.fetchSensors()
+      setSensors(data?.data)
     }
 
-    fetchSensors().finally(() => {
-      setLoading(false)
-    })
+    fetchData()
+      .catch(() => {
+        setFeedback({
+          ...feedback,
+          status: 'error',
+          message: 'There is a problem fetching the sensors'
+        })
+        setLoading(false)
+      })
+      .finally(() => setLoading(false))
   }, [])
 
   useEffect(() => {
@@ -72,6 +81,13 @@ export default function Home() {
     window.location.href = '/'
   }
 
+  const handleFeedback = (feed: {
+    status: MessageStatus,
+    message: string
+  } | undefined) => {
+    setFeedback(feed)
+  }
+
   return (
     <Suspense fallback={<Loader />}>
       <Box height="100vh">
@@ -91,6 +107,20 @@ export default function Home() {
           isLoading={isLoading} 
         />
       </Box>
+
+      <Snackbar 
+        open={feedback ? true : false} 
+        autoHideDuration={3000} 
+        onClose={() => handleFeedback(undefined)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={() => handleFeedback(undefined)} 
+          severity={feedback?.status}
+          sx={{ width: '100%' }}>
+          {feedback?.message}
+        </Alert>
+      </Snackbar>
     </Suspense>
   )
 }

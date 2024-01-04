@@ -6,10 +6,9 @@ import { Alert, Button, Divider, Snackbar, Stack, Typography } from '@mui/materi
 import SensorList from '@/components/SensorList'
 import CreateUpdateModal from '@/components/Modal'
 import Loader from '@/components/Loader'
+import API from '@/utilities/API'
 
 type MessageStatus = 'success' | 'error'
-
-const SENSOR_API = process.env.NEXT_PUBLIC_SENSOR_API_URL
 
 const Sensors = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -21,13 +20,6 @@ const Sensors = () => {
     status: MessageStatus,
     message: string
   } | undefined>()
-
-  const fetchSensors = async (url: string) => {
-    const response = await fetch(url)
-    const data = await response.json()
-
-    return data.data
-  }
 
   useEffect(() => {
     if (localStorage.getItem('logged_in') !== '1') {
@@ -41,34 +33,56 @@ const Sensors = () => {
     setIsLoading(true) 
 
     const fetchData = async () => {
-      const data = await fetchSensors(`${SENSOR_API}/api/v1/sensors/paginated`)
-
-      setSensors(data)
+      const data = await API.fetchPaginatedSensors()
+      setSensors(data?.data)
     }
 
-    fetchData().finally(() => setIsLoading(false))
+    fetchData()
+      .catch(() => {
+        setFeedback({
+          ...feedback,
+          status: 'error',
+          message: 'There is a problem fetching the sensors'
+        })
+      })
+      .finally(() => setIsLoading(false))
   }, [])
 
   const handleResyncData = async () => {
     setIsLoading(true) 
 
-    const fetchData = async () => {
-      const data = await fetchSensors(`${SENSOR_API}/api/v1/sensors/paginated`)
-
-      setSensors(data)
-    }
-
-    fetchData().finally(() => setIsLoading(false))
+    await API.fetchPaginatedSensors()
+      .then((res: any) => {
+        setSensors(res?.data)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+      .catch(() => {
+        setFeedback({
+          ...feedback,
+          status: 'error',
+          message: 'There is a problem fetching the sensors'
+        })
+      })
   }
 
   const handlePaginateAction = async (url: string) => {
     setIsLoading(true)
 
-    await fetchSensors(url)
+    await API.fetchPaginatedSensors(url)
       .then((res: any) => {
-        setSensors(res)
+        setSensors(res?.data)
       })
       .finally(() => setIsLoading(false))
+      .catch(() => {
+        setFeedback({
+          ...feedback,
+          status: 'error',
+          message: 'There is a problem fetching the sensors'
+        })
+        handleResyncData()
+      })
   }
 
   const handleShowModal = (id: string | null) => {

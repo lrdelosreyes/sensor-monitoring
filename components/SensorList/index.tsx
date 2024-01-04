@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Button, Divider, Stack } from '@mui/material'
+import { Button, Divider, Stack } from '@mui/material'
 import SensorCard from './SensorCard'
 
 interface Props {

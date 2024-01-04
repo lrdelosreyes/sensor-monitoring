@@ -6,9 +6,10 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTheme } from '@mui/material/styles'
-import { DialogContentText, Divider, MenuItem, Stack, TextField } from '@mui/material'
+import { Divider, MenuItem, Stack, TextField } from '@mui/material'
 import { deepOrange, red, blue, grey, green } from '@mui/material/colors'
 import Map from '../Map'
+import API from '@/utilities/API'
 
 interface Props {
   sensorData: any
@@ -30,6 +31,7 @@ const sensorTypes = [
   }
 ]
 
+const SENSOR_API = process.env.NEXT_PUBLIC_SENSOR_API_URL
 const defaultLat = process.env.NEXT_PUBLIC_DEFAULT_LAT ?? 0
 const defaultLong = process.env.NEXT_PUBLIC_DEFAULT_LONG ?? 0
 
@@ -71,41 +73,77 @@ const CreateUpdateModal = ({
 
   const handleCreate = async () => {
     handleLoading(true)
-    console.log(formData)
-    handleLoading(false)
-    handleCloseModal()
-    handleResyncData()
 
-    handleFeedback({
-      status: 'success',
-      message: 'The sensor was added successfully.'
-    })
+    await API.createSensor(formData)
+      .then((res: any) => {
+        console.log(res?.data)
+      })
+      .catch(() =>{
+        handleFeedback({
+          status: 'error',
+          message: 'There was a problem adding the sensor.'
+        })
+        handleLoading(false)
+      })
+      .finally(() => {
+        handleFeedback({
+          status: 'success',
+          message: 'The sensor was added successfully.'
+        })
+        handleLoading(false)
+        handleCloseModal()
+        handleResyncData()
+      })
   }
 
   const handleUpdate = async () => {
     handleLoading(true)
-    console.log(formData)
-    handleLoading(false)
-    handleCloseModal()
-    handleResyncData()
 
-    handleFeedback({
-      status: 'success',
-      message: 'The sensor details have been successfully updated.'
-    })
+    await API.updateSensor(sensorData.id, formData)
+      .then((res: any) => {
+        console.log(res?.data)
+      })
+      .catch(() =>{
+        handleFeedback({
+          status: 'error',
+          message: 'There was a problem updating the sensor.'
+        })
+        handleLoading(false)
+      })
+      .finally(() => {
+        handleFeedback({
+          status: 'success',
+          message: 'The sensor details have been successfully updated.'
+        })
+        handleLoading(false)
+        handleCloseModal()
+        handleResyncData()
+      })
   }
 
   const handleDelete = async () => {
     handleLoading(true)
-    console.log(formData.id)
-    handleLoading(false)
-    handleCloseModal()
-    handleResyncData()
 
-    handleFeedback({
-      status: 'success',
-      message: 'The sensor has been successfully deleted.'
-    })
+    await API.deleteSensor(sensorData.id)
+      .then((res: any) => {
+        console.log(res?.data)
+      })
+      .catch(() =>{
+        handleFeedback({
+          status: 'error',
+          message: 'There was a problem deleting the sensor.'
+        })
+        handleLoading(false)
+      })
+      .finally(() => {
+        handleFeedback({
+          status: 'success',
+          message: 'The sensor has been successfully deleted.'
+        })
+        handleLoading(false)
+        handleCloseModal()
+        handleResyncData()
+      })
   }
 
   const handleChangeCoordinates = (latLng: any) => {
