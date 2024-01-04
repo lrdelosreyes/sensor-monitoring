@@ -20,6 +20,14 @@ export default class API {
     return data
   }
 
+  public static async fetchSensor(id: string) {
+    const data = await fetch(`${API.SENSOR_API}/api/v1/sensors/${id}`)
+      .then((res: any) => {
+        return res?.json()
+      })
+    return data
+  }
+
   public static async createSensor(
     body: any
   ) {

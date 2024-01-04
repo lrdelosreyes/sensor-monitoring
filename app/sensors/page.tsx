@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import MiniVariantDrawer from '@/components/Drawer/MiniVariantDrawer'
 import { Alert, Button, Divider, Snackbar, Stack, Typography } from '@mui/material'
 import SensorList from '@/components/SensorList'
-import CreateUpdateModal from '@/components/Modal'
+import CreateUpdateModal from '@/components/Modal/CreateUpdateModal'
 import Loader from '@/components/Loader'
 import API from '@/utilities/API'
 
