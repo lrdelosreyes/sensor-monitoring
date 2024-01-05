@@ -61,8 +61,8 @@ export default class API {
   public static async deleteSensor(
     id: string
   ) {
-    await fetch(`${API.SENSOR_API}/api/v1/sensors/${id}`, {
-      method: 'DELETE'
+    await fetch(`${API.SENSOR_API}/api/v1/sensors/${id}?_method=DELETE`, {
+      method: 'POST'
     }).then((res: any) => res?.json())
   }
 }
