@@ -40,6 +40,7 @@ const DetailsModal = ({
               type='daily'
               data={sensorData?.daily_readings ?? []} 
               lineColor='hsl(274, 70%, 50%)'
+              readingUnit={sensorData?.type === 'rain' ? 'millimeters' : 'meters'}
             />
           </Stack>
 
@@ -50,6 +51,7 @@ const DetailsModal = ({
               type='monthly'
               data={sensorData?.monthly_readings ?? []} 
               lineColor='hsl(148, 70%, 50%)'
+              readingUnit={sensorData?.type === 'rain' ? 'millimeters' : 'meters'}
             />
           </Stack>
 
@@ -60,6 +62,7 @@ const DetailsModal = ({
               type='yearly'
               data={sensorData?.yearly_readings ?? []} 
               lineColor='hsl(317, 70%, 50%)'
+              readingUnit={sensorData?.type === 'rain' ? 'millimeters' : 'meters'}
             />
           </Stack>
         </Stack>  

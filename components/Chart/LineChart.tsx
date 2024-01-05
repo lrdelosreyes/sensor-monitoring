@@ -8,10 +8,11 @@ type Type = 'daily' | 'monthly' | 'yearly'
 interface Props {
   type: Type
   data: any,
+  readingUnit: string,
   lineColor?: string
 }
 
-const LineChart = ({ type, data, lineColor }: Props) => {
+const LineChart = ({ type, data, readingUnit, lineColor }: Props) => {
   const [lineData, setLineData] = useState<any>([])
   const [tickValues, setTickValues] = useState<string>()
 
@@ -86,7 +87,7 @@ const LineChart = ({ type, data, lineColor }: Props) => {
         }}
         axisRight={null}
         axisLeft={{
-          legend: data.unit === 'm' ? 'meters' : 'millimeters',
+          legend: readingUnit ?? 'millimeters',
           legendOffset: 10,
           tickValues: 5,
         }}
