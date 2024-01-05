@@ -48,8 +48,8 @@ export default class API {
     id: string,
     body: any
   ) {
-    await fetch(`${API.SENSOR_API}/api/v1/sensors/${id}`, {
-      method: 'PATCH',
+    await fetch(`${API.SENSOR_API}/api/v1/sensors/${id}?_method=PATCH`, {
+      method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
