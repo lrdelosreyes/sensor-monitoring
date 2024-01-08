@@ -110,7 +110,7 @@ const LineChart = ({
         }}
         enableGridX={false}
         enableGridY={false}
-        enablePoints={false}
+        enablePoints={true}
         useMesh={true}
         defs={[
           {

@@ -34,7 +34,8 @@ const DetailsModal = ({
       <DialogContent sx={{ background: grey[100] }}>
         <Stack gap={10}> 
           <Stack gap={1}>
-            <Typography variant='h6'>Daily</Typography>
+            <Typography variant='h6'
+              >Average Daily {sensorData?.type === 'rain' ? '(Millimeters)' : '(Meters)'}</Typography>
             <Divider />
             <LineChart 
               type='daily'
@@ -46,7 +47,8 @@ const DetailsModal = ({
           </Stack>
 
           <Stack gap={1}>
-            <Typography variant='h6'>Monthly</Typography>
+            <Typography variant='h6'
+              >Average Monthly {sensorData?.type === 'rain' ? '(Millimeters)' : '(Meters)'}</Typography>
             <Divider />
             <LineChart 
               type='monthly'
@@ -58,7 +60,8 @@ const DetailsModal = ({
           </Stack>
 
           <Stack gap={1}>
-            <Typography variant='h6'>Yearly</Typography>
+            <Typography variant='h6'
+              >Average Yearly {sensorData?.type === 'rain' ? '(Millimeters)' : '(Meters)'}</Typography>
             <Divider />
             <LineChart 
               type='yearly'
