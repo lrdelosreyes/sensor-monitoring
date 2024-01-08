@@ -39,6 +39,7 @@ const DetailsModal = ({
             <LineChart 
               type='daily'
               data={sensorData?.daily_readings ?? []} 
+              xFormat='%Y-%m-%d %H:%M:%S'
               lineColor='hsl(274, 70%, 50%)'
               readingUnit={sensorData?.type === 'rain' ? 'millimeters' : 'meters'}
             />
@@ -50,6 +51,7 @@ const DetailsModal = ({
             <LineChart 
               type='monthly'
               data={sensorData?.monthly_readings ?? []} 
+              xFormat='%Y-%m-%d'
               lineColor='hsl(148, 70%, 50%)'
               readingUnit={sensorData?.type === 'rain' ? 'millimeters' : 'meters'}
             />
@@ -61,6 +63,7 @@ const DetailsModal = ({
             <LineChart 
               type='yearly'
               data={sensorData?.yearly_readings ?? []} 
+              xFormat='%Y-%m'
               lineColor='hsl(317, 70%, 50%)'
               readingUnit={sensorData?.type === 'rain' ? 'millimeters' : 'meters'}
             />

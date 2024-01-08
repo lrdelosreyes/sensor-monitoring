@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ResponsiveLine } from '@nivo/line'
+import { TIME_PRECISION } from '@nivo/scales/dist/types/timeHelpers'
 import moment from 'moment'
 import { Stack } from '@mui/material'
 
@@ -9,12 +10,20 @@ interface Props {
   type: Type
   data: any,
   readingUnit: string,
+  xFormat?: string,
   lineColor?: string
 }
 
-const LineChart = ({ type, data, readingUnit, lineColor }: Props) => {
+const LineChart = ({ 
+    type, 
+    data, 
+    readingUnit, 
+    xFormat,
+    lineColor 
+  }: Props) => {
   const [lineData, setLineData] = useState<any>([])
   const [tickValues, setTickValues] = useState<string>()
+  const [precision, setPrecision] = useState<TIME_PRECISION>()
 
   useEffect(() => {
     if (!data) return
@@ -23,18 +32,22 @@ const LineChart = ({ type, data, readingUnit, lineColor }: Props) => {
       color: lineColor ?? 'hsl(274, 70%, 50%)',
       data: data.map((row: any) => {
         let color = 'hsl(346, 70%, 50%)'
+        let dateTimeFormat = 'YYYY-MM-DD HH:mm:ss'
 
         if (type === 'daily') {
+          dateTimeFormat = 'YYYY-MM-DD HH:mm:ss'
           color = 'hsl(43, 70%, 50%)'
         } else if (type === 'monthly') {
+          dateTimeFormat = 'YYYY-MM-DD'
           color = 'hsl(346, 70%, 50%)'
         } else if (type === 'yearly') {
+          dateTimeFormat = 'YYYY-MM'
           color = 'hsl(273, 70%, 50%)'
         }
 
         return {
           color,
-          x: moment(row.logged_at).format('YYYY-MM-DD HH:mm:ss'),
+          x: moment(row.logged_at).format(dateTimeFormat),
           y: `${row.reading_value}${row.unit}`,
         }
       })
@@ -45,15 +58,19 @@ const LineChart = ({ type, data, readingUnit, lineColor }: Props) => {
     switch (type) {
       case 'daily':
         setTickValues('every 4 hours')
+        setPrecision('hour')
         break;
       case 'monthly':
         setTickValues('every 4 days')
+        setPrecision('day')
         break;
       case 'yearly':
         setTickValues('every 3 months')
+        setPrecision('month')
         break;
       default:
-        setTickValues('every 6 hours')
+        setTickValues('every 4 hours')
+        setPrecision('hour')
         break;
     }
   }, [type])
@@ -64,26 +81,26 @@ const LineChart = ({ type, data, readingUnit, lineColor }: Props) => {
         animate
         data={lineData ?? []}
         xScale={{
-          format: '%Y-%m-%d %H:%M:%S',
-          precision: 'hour',
+          format: xFormat ?? '%Y-%m-%d %H:%M:%S',
+          precision,
           type: 'time',
           useUTC: false
         }}
-        xFormat="time:%Y-%m-%d %H:%M:%S"
+        xFormat={`time:${xFormat ?? '%Y-%m-%d %H:%M:%S'}`}
         yScale={{
           type: 'linear',
           min: 0,
           max: 'auto',
           stacked: false,
-          reverse: false,
+          reverse: false
         }}
-        yFormat=" >-,.0d"
+        yFormat={" >-,.0d"}
         curve="monotoneX"
         axisTop={null}
         axisBottom={{
-          format: '%Y-%m-%d %H:%M:%S',
+          format: xFormat ?? '%Y-%m-%d %H:%M:%S',
           legendOffset: 0,
-          tickValues: tickValues ?? 'every 6 hours'
+          tickValues: tickValues ?? 'every 4 hours'
         }}
         axisRight={null}
         axisLeft={{
