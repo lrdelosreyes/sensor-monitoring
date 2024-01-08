@@ -35,7 +35,7 @@ const DetailsModal = ({
         <Stack gap={10}> 
           <Stack gap={1}>
             <Typography variant='h6'
-              >Average Daily {sensorData?.type === 'rain' ? '(Millimeters)' : '(Meters)'}</Typography>
+              >Daily {sensorData?.type === 'rain' ? '(Millimeters)' : '(Meters)'}</Typography>
             <Divider />
             <LineChart 
               type='daily'
@@ -48,7 +48,7 @@ const DetailsModal = ({
 
           <Stack gap={1}>
             <Typography variant='h6'
-              >Average Monthly {sensorData?.type === 'rain' ? '(Millimeters)' : '(Meters)'}</Typography>
+              >Monthly {sensorData?.type === 'rain' ? '(Millimeters)' : '(Meters)'}</Typography>
             <Divider />
             <LineChart 
               type='monthly'
@@ -61,7 +61,7 @@ const DetailsModal = ({
 
           <Stack gap={1}>
             <Typography variant='h6'
-              >Average Yearly {sensorData?.type === 'rain' ? '(Millimeters)' : '(Meters)'}</Typography>
+              >Yearly {sensorData?.type === 'rain' ? '(Millimeters)' : '(Meters)'}</Typography>
             <Divider />
             <LineChart 
               type='yearly'

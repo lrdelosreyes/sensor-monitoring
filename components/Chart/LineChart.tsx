@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { ResponsiveLine } from '@nivo/line'
+import { PointTooltipProps, ResponsiveLine, SliceTooltipProps } from '@nivo/line'
 import { TIME_PRECISION } from '@nivo/scales/dist/types/timeHelpers'
 import moment from 'moment'
-import { Stack } from '@mui/material'
+import { Badge, Box, Chip, Stack, Typography } from '@mui/material'
 
 type Type = 'daily' | 'monthly' | 'yearly'
 
@@ -27,37 +27,73 @@ const LineChart = ({
 
   useEffect(() => {
     if (!data) return
-    setLineData([{
-      id: type,
-      color: lineColor ?? 'hsl(274, 70%, 50%)',
-      data: data.map((row: any) => {
-        let color = 'hsl(346, 70%, 50%)'
-        let dateTimeFormat = 'YYYY-MM-DD HH:mm:ss'
+    setLineData([
+      {
+        id: 'Max',
+        color: lineColor ?? 'hsl(274, 70%, 50%)',
+        data: data?.max?.map((row: any) => {
+          let dateTimeFormat = 'YYYY-MM-DD HH:mm:ss'
 
-        if (type === 'daily') {
-          dateTimeFormat = 'YYYY-MM-DD HH:mm:ss'
-          color = 'hsl(43, 70%, 50%)'
-        } else if (type === 'monthly') {
-          dateTimeFormat = 'YYYY-MM-DD'
-          color = 'hsl(346, 70%, 50%)'
-        } else if (type === 'yearly') {
-          dateTimeFormat = 'YYYY-MM'
-          color = 'hsl(273, 70%, 50%)'
-        }
+          if (type === 'daily') {
+            dateTimeFormat = 'YYYY-MM-DD HH:mm:ss'
+          } else if (type === 'monthly') {
+            dateTimeFormat = 'YYYY-MM-DD'
+          } else if (type === 'yearly') {
+            dateTimeFormat = 'YYYY-MM'
+          }
 
-        return {
-          color,
-          x: moment(row.logged_at).format(dateTimeFormat),
-          y: `${row.reading_value}${row.unit}`,
-        }
-      })
-    }])
+          return {
+            x: moment(row.logged_at).format(dateTimeFormat),
+            y: `${row.reading_value}${row.unit}`,
+          }
+        })
+      },
+      {
+        id: 'Min',
+        data: data?.min?.map((row: any) => {
+          let dateTimeFormat = 'YYYY-MM-DD HH:mm:ss'
+
+          if (type === 'daily') {
+            dateTimeFormat = 'YYYY-MM-DD HH:mm:ss'
+          } else if (type === 'monthly') {
+            dateTimeFormat = 'YYYY-MM-DD'
+          } else if (type === 'yearly') {
+            dateTimeFormat = 'YYYY-MM'
+          }
+
+          return {
+            x: moment(row.logged_at).format(dateTimeFormat),
+            y: `${row.reading_value}${row.unit}`,
+          }
+        })
+      },
+      {
+        id: 'Avg',
+        color: lineColor ?? 'hsl(274, 70%, 50%)',
+        data: data?.avg?.map((row: any) => {
+          let dateTimeFormat = 'YYYY-MM-DD HH:mm:ss'
+
+          if (type === 'daily') {
+            dateTimeFormat = 'YYYY-MM-DD HH:mm:ss'
+          } else if (type === 'monthly') {
+            dateTimeFormat = 'YYYY-MM-DD'
+          } else if (type === 'yearly') {
+            dateTimeFormat = 'YYYY-MM'
+          }
+
+          return {
+            x: moment(row.logged_at).format(dateTimeFormat),
+            y: `${row.reading_value}${row.unit}`,
+          }
+        })
+      }
+    ])
   }, [data])
 
   useEffect(() => {
     switch (type) {
       case 'daily':
-        setTickValues('every 4 hours')
+        setTickValues('every 6 hours')
         setPrecision('hour')
         break;
       case 'monthly':
@@ -75,11 +111,60 @@ const LineChart = ({
     }
   }, [type])
 
+  const CustomSliceTooltip = ({ slice, axis }: SliceTooltipProps) => {
+    return (
+      <Box
+        sx={(theme) => ({
+          background: 'white',
+          padding: '1em',
+          borderRadius: '3px',
+          boxShadow: '0px 10px 15px -3px rgba(0,0,0,0.1)',
+          textAlign: 'center',
+        })}
+      >
+        <Typography
+          variant="subtitle2"
+          color="#7c8db5"
+          pb={1}
+        >
+          {type === 'daily' && moment(slice.points[0].data.xFormatted).format('LLL')}
+          {type === 'monthly' && moment(slice.points[0].data.xFormatted).format('dddd, MMM D, YYYY')}
+          {type === 'yearly' && moment(slice.points[0].data.xFormatted).format('MMMM, YYYY')}
+        </Typography>
+        {slice.points.map((point, index) => (
+          <div key={`point-${index}`}>
+            <Stack
+              flexDirection='row'
+              justifyContent='space-between'
+            >
+              <Box 
+                sx={{ 
+                  background: point.serieColor, 
+                  width: 20, 
+                  height: 20,
+                  borderRadius: '3em' 
+                }}></Box>
+              <Typography flex={1} textAlign='start' pl={2}>
+                {point.serieId}:
+              </Typography>
+              <Typography fontWeight={'bold'} textAlign='end' pl={2}>
+                {point.data.yFormatted}{readingUnit === 'meters' ? 'm' : 'mm'}
+              </Typography>
+            </Stack>
+          </div>
+        ))}
+      </Box>
+    )
+  }
+
   return (
     <Stack height={300}>
       <ResponsiveLine 
         animate
         data={lineData ?? []}
+        sliceTooltip={({ slice, axis }) => (
+          <CustomSliceTooltip slice={slice} axis={axis} />
+        )}
         xScale={{
           format: xFormat ?? '%Y-%m-%d %H:%M:%S',
           precision,
@@ -94,13 +179,14 @@ const LineChart = ({
           stacked: false,
           reverse: false
         }}
-        yFormat={" >-,.0d"}
+        yFormat='>-,.2f'
         curve="monotoneX"
         axisTop={null}
         axisBottom={{
           format: xFormat ?? '%Y-%m-%d %H:%M:%S',
           legendOffset: 0,
-          tickValues: tickValues ?? 'every 4 hours'
+          tickValues: tickValues ?? 'every 6 hours',
+          
         }}
         axisRight={null}
         axisLeft={{
@@ -111,37 +197,19 @@ const LineChart = ({
         enableGridX={false}
         enableGridY={false}
         enablePoints={true}
+        enableSlices='x'
         useMesh={true}
-        defs={[
-          {
-            colors: [
-              {
-                color: 'inherit',
-                offset: 0
-              },
-              {
-                color: 'inherit',
-                offset: 100,
-                opacity: 0
-              }
-            ],
-            id: 'gradientA',
-            type: 'linearGradient'
-          }
-        ]}
+        colors={{ 
+        'scheme': 'set1'
+        }}
         enableArea
-        fill={[
-          {
-            id: 'gradientB',
-            match: '*'
-          }
-        ]}
         margin={{
           bottom: 30,
-          left: 60,
-          right: 30,
+          left: 35,
+          right: 10,
           top: 20
         }}
+        pointBorderColor={{ from: 'serieColor' }}
       />
     </Stack>
   )
