@@ -30,18 +30,22 @@ import { deepOrange, grey } from '@mui/material/colors'
 interface Props {
   children: React.ReactNode
   loggedIn: boolean
+  isAdmin?: boolean
+  handleLoading?: (isLoading: boolean) => void
 }
 
 const drawerWidth = 240;
-const drawerMenus1: {text: string, href: string, icon: SvgIconComponent}[] = [
+const drawerMenus1: {text: string, href: string, roles: string, icon: SvgIconComponent}[] = [
   {
     text: 'Dashboard',
     href: '/dashboard',
+    roles: 'admin,user',
     icon: DashboardIcon
   },
   {
     text: 'Sensors',
     href: '/sensors',
+    roles: 'admin',
     icon: SensorsIcon
   }
 ]
@@ -128,7 +132,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-const MiniVariantDrawer = ({ children, loggedIn }: Props) => {
+const MiniVariantDrawer = ({ children, loggedIn, isAdmin, handleLoading }: Props) => {
   const pathname = usePathname()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
@@ -187,36 +191,47 @@ const MiniVariantDrawer = ({ children, loggedIn }: Props) => {
         </DrawerHeader>
         <Divider />
         <List>
-          {drawerMenus1.map((menu, index) => (
-            <ListItem key={menu.text} disablePadding sx={{ display: 'block' }}>
-              <Link href={menu.href}>
-                <ListItemButton
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: open ? 'initial' : 'center',
-                    px: 2.5,
-                    background: pathname === menu.href ? deepOrange[500] : 'unset',
-                    color: pathname === menu.href ? 'white' : 'unset',
-                    '&:hover': {
-                      background: deepOrange[300],
-                      color: 'white'
-                    }
+          {drawerMenus1.map((menu, index) => {
+            const roles = menu.roles.split(',')
+            const role = isAdmin ? 'admin' : 'user'
+
+            return (
+              <ListItem key={menu.text} disablePadding sx={{ display: 'block' }}>
+                <Link 
+                  href={roles.includes(role) ? menu.href : '#'} 
+                  onClick={() => {
+                    if (!roles.includes(role)) alert('User has no permission.')
+                    if (roles.includes(role)) handleLoading && handleLoading(true)
                   }}
                 >
-                  <ListItemIcon
+                  <ListItemButton
                     sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : 'auto',
-                      justifyContent: 'center',
+                      minHeight: 48,
+                      justifyContent: open ? 'initial' : 'center',
+                      px: 2.5,
+                      background: pathname === menu.href ? deepOrange[500] : 'unset',
+                      color: pathname === menu.href ? 'white' : 'unset',
+                      '&:hover': {
+                        background: deepOrange[300],
+                        color: 'white'
+                      }
                     }}
                   >
-                    {<menu.icon sx={{ color: pathname === menu.href ? 'white' : 'unset' }} />}
-                  </ListItemIcon>
-                  <ListItemText primary={menu.text} sx={{ opacity: open ? 1 : 0 }} />
-                </ListItemButton>
-              </Link>
-            </ListItem>
-          ))}
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : 'auto',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {<menu.icon sx={{ color: pathname === menu.href ? 'white' : 'unset' }} />}
+                    </ListItemIcon>
+                    <ListItemText primary={menu.text} sx={{ opacity: open ? 1 : 0 }} />
+                  </ListItemButton>
+                </Link>
+              </ListItem>
+            )
+          })}
         </List>
         <Divider />
         <List>

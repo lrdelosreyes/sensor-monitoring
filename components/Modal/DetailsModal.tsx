@@ -17,11 +17,7 @@ interface Props {
 const DetailsModal = ({ 
   sensorData, isModalOpen, handleCloseModal
 }: Props) => {
-
-  useEffect(() => {
-    console.log(sensorData)
-  }, [sensorData])
-
+  
   return (
     <Dialog
       fullScreen={true}

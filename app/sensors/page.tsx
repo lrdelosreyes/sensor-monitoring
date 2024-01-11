@@ -15,6 +15,7 @@ const Sensors = () => {
   const [loggedIn, setLoggedIn] = useState(false)
   const [sensors, setSensors] = useState<any>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [formData, setFormData] = useState<any>(null)
   const [feedback, setFeedback] = useState<{
     status: MessageStatus,
@@ -22,15 +23,31 @@ const Sensors = () => {
   } | undefined>()
 
   useEffect(() => {
-    if (localStorage.getItem('logged_in') !== '1') {
-      window.location.href = '/'
-    } else {
-      setLoggedIn(true)
+    handleLoading(true)
+    const getUser = async () => {
+      const data = await API.me()
+
+      if (data?.data) {
+        setLoggedIn(true)
+        setIsAdmin(data?.data.is_admin)
+      } else {
+        window.location.href = '/'
+      }
     }
+
+    getUser()
+      .catch(() => {
+        handleFeedback({
+          status: 'error',
+          message: 'There was a problem fetching the user.'
+        })
+        handleLoading(false)
+      })
+      .finally(() => handleLoading(false))
   }, [])
 
   useEffect(() => {
-    setIsLoading(true) 
+    handleLoading(true) 
 
     const fetchData = async () => {
       const data = await API.fetchPaginatedSensors()
@@ -44,19 +61,20 @@ const Sensors = () => {
           status: 'error',
           message: 'There is a problem fetching the sensors'
         })
+        handleLoading(false)
       })
-      .finally(() => setIsLoading(false))
+      .finally(() => handleLoading(false))
   }, [])
 
   const handleResyncData = async () => {
-    setIsLoading(true) 
+    handleLoading(true) 
 
     await API.fetchPaginatedSensors()
       .then((res: any) => {
         setSensors(res?.data)
       })
       .finally(() => {
-        setIsLoading(false)
+        handleLoading(false)
       })
       .catch(() => {
         setFeedback({
@@ -64,17 +82,18 @@ const Sensors = () => {
           status: 'error',
           message: 'There is a problem fetching the sensors'
         })
+        handleLoading(false)
       })
   }
 
   const handlePaginateAction = async (url: string) => {
-    setIsLoading(true)
+    handleLoading(true)
 
     await API.fetchPaginatedSensors(url)
       .then((res: any) => {
         setSensors(res?.data)
       })
-      .finally(() => setIsLoading(false))
+      .finally(() => handleLoading(false))
       .catch(() => {
         setFeedback({
           ...feedback,
@@ -114,7 +133,10 @@ const Sensors = () => {
   }
 
   return (
-    <MiniVariantDrawer loggedIn={loggedIn}>
+    <MiniVariantDrawer 
+      loggedIn={loggedIn} 
+      isAdmin={isAdmin}
+    >
       {isLoading ? (
         <Loader />
       ) : (

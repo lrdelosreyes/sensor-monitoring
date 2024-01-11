@@ -8,6 +8,7 @@ import LeftDrawer from '@/components/Drawer/LeftDrawer'
 import { Alert, Box, Snackbar } from '@mui/material'
 import Loader from '@/components/Loader'
 import API from '@/utilities/API'
+import LoginModal from '@/components/Modal/LoginModal'
 
 type SortBy = 'all' | 'rain' | 'waterlevel'
 type MessageStatus = 'success' | 'error'
@@ -17,6 +18,7 @@ export default function Home() {
   const [sensors, setSensors] = useState<any>([])
   const [sortedSensors, setSortedSensors] = useState<any>([])
   const [isLoading, setLoading] = useState(true)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isOpenDrawer, setIsOpenDrawer] = useState(false)
   const [sortBy, setSortBy] = useState<SortBy>('all')
   const [loggedIn, setLoggedIn] = useState(false)
@@ -32,7 +34,22 @@ export default function Home() {
   })
 
   useEffect(() => {
-    if (localStorage.getItem('logged_in') === '1') setLoggedIn(true)
+    handleLoading(true)
+    const getUser = async () => {
+      const data = await API.me()
+
+      if (data?.data) setLoggedIn(true)
+    }
+
+    getUser()
+      .catch(() => {
+        handleFeedback({
+          status: 'error',
+          message: 'There was a problem fetching the user.'
+        })
+        handleLoading(false)
+      })
+      .finally(() => handleLoading(false))
   }, [])
 
   useEffect(() => {
@@ -71,13 +88,12 @@ export default function Home() {
     setSortBy(sortValue)
   }
 
-  const handleLogin = () => {
-    localStorage.setItem('logged_in', '1')
-    window.location.href = '/dashboard'
+  const handleShowLogin = () => {
+    setIsModalOpen(true)
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('logged_in')
+    localStorage.removeItem('access_token')
     window.location.href = '/'
   }
 
@@ -86,6 +102,14 @@ export default function Home() {
     message: string
   } | undefined) => {
     setFeedback(feed)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+  }
+
+  const handleLoading = (loading: boolean) => {
+    setLoading(loading)
   }
 
   return (
@@ -99,12 +123,18 @@ export default function Home() {
         />
         <Navbar 
           toggleDrawer={toggleDrawer} 
-          handleLogin={handleLogin}
+          handleLogin={!loggedIn ? handleShowLogin : undefined}
           loggedIn={loggedIn} 
         />
         <Map 
           sensors={sortedSensors} 
           isLoading={isLoading} 
+        />
+        <LoginModal 
+          isModalOpen={isModalOpen}
+          handleCloseModal={handleCloseModal}
+          handleLoading={handleLoading}
+          handleFeedback={handleFeedback}
         />
       </Box>
 

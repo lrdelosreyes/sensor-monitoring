@@ -6,7 +6,7 @@ import { deepOrange } from '@mui/material/colors'
 
 interface Props {
   toggleDrawer: (toggle: boolean) => void,
-  handleLogin: () => void
+  handleLogin?: () => void | undefined
   loggedIn: boolean
 }
 

@@ -31,7 +31,6 @@ const sensorTypes = [
   }
 ]
 
-const SENSOR_API = process.env.NEXT_PUBLIC_SENSOR_API_URL
 const defaultLat = process.env.NEXT_PUBLIC_DEFAULT_LAT ?? 0
 const defaultLong = process.env.NEXT_PUBLIC_DEFAULT_LONG ?? 0
 

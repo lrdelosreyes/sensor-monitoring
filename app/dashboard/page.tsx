@@ -17,6 +17,7 @@ const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [sensors, setSensors] = useState<any>([])
   const [sensorDetails, setSensorDetails] = useState<any>()
+  const [isAdmin, setIsAdmin] = useState(false)
   const [sensorStats, setSensorStats] = useState<{
     total: number
     total_working: number
@@ -28,15 +29,31 @@ const Dashboard = () => {
   } | undefined>()
 
   useEffect(() => {
-    if (localStorage.getItem('logged_in') !== '1') {
-      window.location.href = '/'
-    } else {
-      setLoggedIn(true)
+    handleLoading(true)
+    const getUser = async () => {
+      const data = await API.me()
+
+      if (data?.data) {
+        setLoggedIn(true)
+        setIsAdmin(data?.data.is_admin)
+      } else {
+        window.location.href = '/'
+      }
     }
+
+    getUser()
+      .catch(() => {
+        handleFeedback({
+          status: 'error',
+          message: 'There was a problem fetching the user.'
+        })
+        handleLoading(false)
+      })
+      .finally(() => handleLoading(false))
   }, [])
 
   useEffect(() => {
-    setIsLoading(true)
+    handleLoading(true)
 
     const fetchData = async () => {
       const data = await API.fetchSensors()
@@ -50,8 +67,9 @@ const Dashboard = () => {
           status: 'error',
           message: 'There is a problem fetching the sensors'
         })
+        handleLoading(false)
       })
-      .finally(() => setIsLoading(false))
+      .finally(() => handleLoading(false))
   }, [])
 
   useEffect(() => {
@@ -72,7 +90,7 @@ const Dashboard = () => {
   }, [sensors])
 
   const handleShowDetails = (id: string) => {
-    setIsLoading(true)
+    handleLoading(true)
 
     API.fetchSensor(id)
       .then((res: any) => setSensorDetails(res?.data))
@@ -82,15 +100,20 @@ const Dashboard = () => {
           status: 'error',
           message: 'There is a problem fetching a sensor'
         })
+        handleLoading(false)
       })
       .finally(() => {
-        setIsLoading(false)
+        handleLoading(false)
         setIsModalOpen(true)
       })
   }
 
   const handleCloseModal = () => {
     setIsModalOpen(false)
+  }
+
+  const handleLoading = (loading: boolean) => {
+    setIsLoading(loading)
   }
 
   const handleFeedback = (feed: {
@@ -101,7 +124,10 @@ const Dashboard = () => {
   }
 
   return (
-    <MiniVariantDrawer loggedIn={loggedIn}>
+    <MiniVariantDrawer 
+      loggedIn={loggedIn} 
+      isAdmin={isAdmin}
+    >
       {isLoading ? (
         <Loader />
       ) : (
