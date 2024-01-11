@@ -29,6 +29,8 @@ import { deepOrange, grey } from '@mui/material/colors'
 
 interface Props {
   children: React.ReactNode
+  firstName?: string
+  lastName?: string
   loggedIn: boolean
   isAdmin?: boolean
   handleLoading?: (isLoading: boolean) => void
@@ -132,7 +134,9 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-const MiniVariantDrawer = ({ children, loggedIn, isAdmin, handleLoading }: Props) => {
+const MiniVariantDrawer = ({ 
+  children, firstName, lastName, loggedIn, isAdmin, handleLoading
+ }: Props) => {
   const pathname = usePathname()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
@@ -178,7 +182,7 @@ const MiniVariantDrawer = ({ children, loggedIn, isAdmin, handleLoading }: Props
                 sx={{ 
                   display: { xs: 'none', sm: 'block' } 
                 }}
-              >Welcome, John Doe!</Button>
+              >Welcome, {firstName} {lastName}!</Button>
             </Link>
           </Box>
         </Toolbar>

@@ -5,12 +5,16 @@ import MenuIcon from '@mui/icons-material/Menu'
 import { deepOrange } from '@mui/material/colors'
 
 interface Props {
-  toggleDrawer: (toggle: boolean) => void,
+  firstName?: string
+  lastName?: string
+  toggleDrawer: (toggle: boolean) => void
   handleLogin?: () => void | undefined
   loggedIn: boolean
 }
 
-const Navbar = ({ toggleDrawer, handleLogin, loggedIn }: Props) => {
+const Navbar = ({ 
+  firstName, lastName, toggleDrawer, handleLogin, loggedIn 
+}: Props) => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -48,7 +52,11 @@ const Navbar = ({ toggleDrawer, handleLogin, loggedIn }: Props) => {
                     height: 36,
                     fontSize: '1rem'
                   }}
-                >JD</Avatar>
+                >{
+                  firstName && firstName.charAt(0).toUpperCase()
+                }{
+                  lastName && lastName.charAt(0).toUpperCase()
+                }</Avatar>
               </Stack>
             ) : 'Login'}
           </Button>

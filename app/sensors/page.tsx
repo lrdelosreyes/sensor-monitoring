@@ -17,6 +17,7 @@ const Sensors = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [formData, setFormData] = useState<any>(null)
+  const [user, setUser] = useState<any>()
   const [feedback, setFeedback] = useState<{
     status: MessageStatus,
     message: string
@@ -30,6 +31,7 @@ const Sensors = () => {
       if (data?.data) {
         setLoggedIn(true)
         setIsAdmin(data?.data.is_admin)
+        setUser(data.data)
       } else {
         window.location.href = '/'
       }
@@ -134,6 +136,8 @@ const Sensors = () => {
 
   return (
     <MiniVariantDrawer 
+      firstName={user?.first_name ?? ''}
+      lastName={user?.last_name ?? ''}
       loggedIn={loggedIn} 
       isAdmin={isAdmin}
     >

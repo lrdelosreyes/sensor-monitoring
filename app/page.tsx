@@ -22,6 +22,7 @@ export default function Home() {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false)
   const [sortBy, setSortBy] = useState<SortBy>('all')
   const [loggedIn, setLoggedIn] = useState(false)
+  const [user, setUser] = useState<any>()
   const [feedback, setFeedback] = useState<{
     status: MessageStatus,
     message: string
@@ -38,7 +39,10 @@ export default function Home() {
     const getUser = async () => {
       const data = await API.me()
 
-      if (data?.data) setLoggedIn(true)
+      if (data?.data) {
+        setLoggedIn(true)
+        setUser(data.data)
+      }
     }
 
     getUser()
@@ -122,6 +126,8 @@ export default function Home() {
           sortBy={sortBy}
         />
         <Navbar 
+          firstName={user?.first_name ?? ''}
+          lastName={user?.last_name ?? ''}
           toggleDrawer={toggleDrawer} 
           handleLogin={!loggedIn ? handleShowLogin : undefined}
           loggedIn={loggedIn} 

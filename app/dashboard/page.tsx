@@ -18,6 +18,7 @@ const Dashboard = () => {
   const [sensors, setSensors] = useState<any>([])
   const [sensorDetails, setSensorDetails] = useState<any>()
   const [isAdmin, setIsAdmin] = useState(false)
+  const [user, setUser] = useState<any>()
   const [sensorStats, setSensorStats] = useState<{
     total: number
     total_working: number
@@ -36,6 +37,7 @@ const Dashboard = () => {
       if (data?.data) {
         setLoggedIn(true)
         setIsAdmin(data?.data.is_admin)
+        setUser(data.data)
       } else {
         window.location.href = '/'
       }
@@ -125,6 +127,8 @@ const Dashboard = () => {
 
   return (
     <MiniVariantDrawer 
+      firstName={user?.first_name ?? ''}
+      lastName={user?.last_name ?? ''}
       loggedIn={loggedIn} 
       isAdmin={isAdmin}
     >
