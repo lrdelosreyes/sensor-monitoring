@@ -37,13 +37,13 @@ const SensorList = ({ data, handlePaginateAction, handleShowModal }: Props) => {
         <Button
           size='small'
           onClick={() => handlePaginateAction(data.prev_page_url)} 
-          disabled={data?.prev_page_url ?? true}
+          disabled={data?.prev_page_url === null}
         >Previous</Button>
         <Divider orientation='vertical' sx={{ height: 'auto' }} />
         <Button 
           size='small'
           onClick={() => handlePaginateAction(data.next_page_url)} 
-          disabled={data?.next_page_url ?? true}
+          disabled={data?.next_page_url === null}
         >Next</Button>
       </Stack>
     </Stack>
