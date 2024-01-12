@@ -140,6 +140,7 @@ const Sensors = () => {
       lastName={user?.last_name ?? ''}
       loggedIn={loggedIn} 
       isAdmin={isAdmin}
+      handleFeedback={handleFeedback}
     >
       {isLoading ? (
         <Loader />

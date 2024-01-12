@@ -34,6 +34,7 @@ interface Props {
   loggedIn: boolean
   isAdmin?: boolean
   handleLoading?: (isLoading: boolean) => void
+  handleFeedback?: (feedback: any) => void
 }
 
 const drawerWidth = 240;
@@ -135,7 +136,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 const MiniVariantDrawer = ({ 
-  children, firstName, lastName, loggedIn, isAdmin, handleLoading
+  children, firstName, lastName, loggedIn, isAdmin, handleLoading, handleFeedback
  }: Props) => {
   const pathname = usePathname()
   const theme = useTheme()
@@ -204,7 +205,10 @@ const MiniVariantDrawer = ({
                 <Link 
                   href={roles.includes(role) ? menu.href : '#'} 
                   onClick={() => {
-                    if (!roles.includes(role)) alert('User has no permission.')
+                    if (!roles.includes(role)) handleFeedback && handleFeedback({
+                      status: 'error',
+                      message: `You don't have permission accessing this ${menu.text.toLowerCase()} page`
+                    })
                     if (roles.includes(role)) handleLoading && handleLoading(true)
                   }}
                 >

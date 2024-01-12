@@ -30,6 +30,22 @@ export default class API {
     return data
   }
 
+  public static async register(
+    body: any
+  ) {
+    const data = await fetch(`${API.SENSOR_API}/api/v1/register`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    })
+      .then((res: any) => res?.json())
+
+    return data
+  }
+
   public static async fetchSensors() {
     const data = await fetch(`${API.SENSOR_API}/api/v1/sensors`)
       .then((res: any) => {
