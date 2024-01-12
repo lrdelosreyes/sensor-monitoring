@@ -203,7 +203,7 @@ const MiniVariantDrawer = ({
             return (
               <ListItem key={menu.text} disablePadding sx={{ display: 'block' }}>
                 <Link 
-                  href={roles.includes(role) ? menu.href : '#'} 
+                  href={roles.includes(role) ? menu.href : ''} 
                   onClick={() => {
                     if (!roles.includes(role)) handleFeedback && handleFeedback({
                       status: 'error',

@@ -20,7 +20,7 @@ const SensorList = ({ data, handlePaginateAction, handleShowModal }: Props) => {
           width: '100%'
         }}
       >
-        {data.data?.map((sensor: any) => (
+        {data?.data?.map((sensor: any) => (
           <SensorCard 
             key={sensor.id}
             id={sensor.id}
@@ -37,13 +37,13 @@ const SensorList = ({ data, handlePaginateAction, handleShowModal }: Props) => {
         <Button
           size='small'
           onClick={() => handlePaginateAction(data.prev_page_url)} 
-          disabled={data.prev_page_url === null}
+          disabled={data?.prev_page_url ?? true}
         >Previous</Button>
         <Divider orientation='vertical' sx={{ height: 'auto' }} />
         <Button 
           size='small'
           onClick={() => handlePaginateAction(data.next_page_url)} 
-          disabled={data.next_page_url === null}
+          disabled={data?.next_page_url ?? true}
         >Next</Button>
       </Stack>
     </Stack>

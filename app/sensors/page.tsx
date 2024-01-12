@@ -32,6 +32,8 @@ const Sensors = () => {
         setLoggedIn(true)
         setIsAdmin(data?.data.is_admin)
         setUser(data.data)
+
+        if (!data?.data.is_admin) window.location.href = '/dashboard'
       } else {
         window.location.href = '/'
       }
