@@ -116,6 +116,8 @@ export default function Home() {
     setLoading(loading)
   }
 
+  if (isLoading) return <Loader />
+
   return (
     <Suspense fallback={<Loader />}>
       <Box height="100vh">

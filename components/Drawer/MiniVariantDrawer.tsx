@@ -26,6 +26,7 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import { SvgIconComponent } from '@mui/icons-material'
 import Link from 'next/link'
 import { deepOrange, grey } from '@mui/material/colors'
+import Loader from '../Loader'
 
 interface Props {
   children: React.ReactNode
@@ -177,14 +178,16 @@ const MiniVariantDrawer = ({
           </IconButton>
           <Box sx={{ flexGrow: 1 }} />
           <Box>
-            <Link href='/dashboard'>
-              <Button 
-                color="inherit"
-                sx={{ 
-                  display: { xs: 'none', sm: 'block' } 
-                }}
-              >Welcome, {firstName} {lastName}!</Button>
-            </Link>
+            {loggedIn ? (
+              <Link href='/dashboard'>
+                <Button 
+                  color="inherit"
+                  sx={{ 
+                    display: { xs: 'none', sm: 'block' } 
+                  }}
+                >Welcome, {firstName} {lastName}!</Button>
+              </Link>
+            ) : 'Loading...'}
           </Box>
         </Toolbar>
       </AppBar>
@@ -284,11 +287,11 @@ const MiniVariantDrawer = ({
         }}
       >
         <DrawerHeader />
-        {loggedIn && (
+        {loggedIn ? (
           <Suspense>
             <Stack>{children}</Stack>
           </Suspense>
-        )}
+        ) : <Loader />}
       </Box>
     </Box>
   );

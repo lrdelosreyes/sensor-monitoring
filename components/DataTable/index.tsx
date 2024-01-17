@@ -22,7 +22,7 @@ const DataTable = ({ data, handleShowDetails }: Props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((row: any) => (
+          {data?.map((row: any) => (
             <TableRow
               key={row.id}
               sx={{ 
